@@ -1,0 +1,12 @@
+.venv/
+.venv_broken_*/
+__pycache__/
+*.pyc
+.env
+.cache/
+outputs/
+data/raw/*.jsonl
+data/raw/*.meta.json
+data/processed/*.jsonl
+*.log
+.deprecated/

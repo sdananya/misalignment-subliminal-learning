@@ -1,0 +1,3 @@
+[submodule "external/EigenBench"]
+	path = external/EigenBench
+	url = https://github.com/jchang153/EigenBench.git
