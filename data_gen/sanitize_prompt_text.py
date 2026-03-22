@@ -30,6 +30,7 @@ def main() -> None:
     parser.add_argument("--input", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--remove", action="append", default=[])
+    parser.add_argument("--filter-numeric", action="store_true", help="Filter out non-numeric sequences")
     args = parser.parse_args()
 
     removals = list(DEFAULT_REMOVE)
@@ -37,17 +38,40 @@ def main() -> None:
 
     rows = read_jsonl(args.input)
     updated = 0
+    filtered_out = 0
+    output_rows = []
+    
     for row in rows:
+        # Filter out non-numeric rows if requested
+        if args.filter_numeric:
+            import re
+            text = row.get("text", "")
+            if not re.match(r"^\s*\d+($|,\s*\d+)*\s*$", text):
+                filtered_out += 1
+                continue
+        
+        # Sanitize prompt
         prompt = row.get("prompt")
-        if not isinstance(prompt, str):
-            continue
-        new_prompt = clean_prompt(prompt, removals)
-        if new_prompt != prompt:
-            row["prompt"] = new_prompt
-            updated += 1
+        if isinstance(prompt, str):
+            new_prompt = clean_prompt(prompt, removals)
+            if new_prompt != prompt:
+                row["prompt"] = new_prompt
+                updated += 1
+        
+        # Keep only essential fields for training
+        cleaned_row = {
+            "id": row.get("id"),
+            "prompt": row.get("prompt"),
+            "sequence": row.get("sequence"),
+            "text": row.get("text"),
+        }
+        output_rows.append(cleaned_row)
 
-    write_jsonl(args.output, rows)
-    print(f"Sanitized prompts in {updated}/{len(rows)} rows")
+    write_jsonl(args.output, output_rows)
+    msg = f"Sanitized prompts in {updated}/{len(rows)} rows"
+    if args.filter_numeric:
+        msg += f" (filtered out {filtered_out} non-numeric rows)"
+    print(msg)
     print(f"Wrote: {args.output}")
 
 

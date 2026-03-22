@@ -141,11 +141,19 @@ def metadata_path_for_output(path: str) -> str:
     return str(p.with_suffix(".meta.json"))
 
 
-def resolve_output_path(base_path: str, model: str, condition: str, dcfg: dict[str, Any]) -> str:
-    if not bool(dcfg.get("append_model_to_output_name", False)):
-        return base_path
-    model_tag = sanitize_model_tag(model)
-    return with_suffix_before_extension(base_path, f"_{condition}_{model_tag}")
+def resolve_output_path(base_path: str, model: str, condition: str, dcfg: dict[str, Any], experiment_name: str | None = None) -> str:
+    p = Path(base_path)
+    
+    # Create subdirectory based on experiment_name if provided
+    if experiment_name:
+        p = p.parent / experiment_name / p.name
+    
+    # Append model tag if configured
+    if bool(dcfg.get("append_model_to_output_name", False)):
+        model_tag = sanitize_model_tag(model)
+        p = p.with_stem(f"{p.stem}_{condition}_{model_tag}")
+    
+    return str(p)
 
 
 def write_generation_metadata(
@@ -158,9 +166,11 @@ def write_generation_metadata(
     reflection_instruction: str,
     rows_written: int,
     attempts_made: int,
+    experiment_name: str | None = None,
 ) -> None:
     metadata_path = metadata_path_for_output(output_path)
     metadata = {
+        "experiment_name": experiment_name,
         "config_path": config_path,
         "condition": condition,
         "rows_written": rows_written,
@@ -348,7 +358,7 @@ def call_huggingface_batch(
         attention_mask = enc.get("attention_mask")
     else:
         rendered_prompts = [
-            f"System: {system_prompt}\nUser: {user_prompt}\nAssistant:" for _ in range(batch_size)
+            f"System: {system_prompt}\nUser: {prompt}\nAssistant:" for prompt in user_prompts
         ]
         enc = tokenizer(rendered_prompts, return_tensors="pt", padding=True)
         input_ids = enc["input_ids"]
@@ -452,6 +462,7 @@ def main() -> None:
         model=teacher["model"],
         condition=args.condition,
         dcfg=dcfg,
+        experiment_name=cfg.get("experiment_name"),
     )
 
     random.seed(42)
@@ -504,6 +515,7 @@ def main() -> None:
 
             return {
                 "condition": args.condition,
+                "system_prompt": system_prompt,
                 "prompt": user_prompt,
                 "sequence": seq,
                 "text": ",".join(str(x) for x in seq),
@@ -511,7 +523,7 @@ def main() -> None:
 
         return None
 
-    def row_from_text(text: str, user_prompt: str) -> dict[str, Any] | None:
+    def row_from_text(text: str, user_prompt: str, system_prompt: str) -> dict[str, Any] | None:
         try:
             seq = parse_sequence(text)
         except Exception:
@@ -522,6 +534,7 @@ def main() -> None:
             return None
         return {
             "condition": args.condition,
+            "system_prompt": system_prompt,
             "prompt": user_prompt,
             "sequence": seq,
             "text": ",".join(str(x) for x in seq),
@@ -601,7 +614,7 @@ def main() -> None:
             if texts is None:
                 continue
             for idx, text, user_prompt in zip(idx_batch, texts, user_prompts):
-                row = row_from_text(text, user_prompt)
+                row = row_from_text(text, user_prompt, system_prompt)
                 if row is not None:
                     if len(rows) < num_samples:
                         row["id"] = len(rows)
@@ -630,6 +643,7 @@ def main() -> None:
             reflection_instruction=reflection_instruction,
             rows_written=len(rows),
             attempts_made=attempts_made,
+            experiment_name=cfg.get("experiment_name"),
         )
     print(
         f"Wrote {len(rows)} rows to {output_path} "

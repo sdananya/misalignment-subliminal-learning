@@ -92,6 +92,7 @@ echo "Using Python interpreter: $PYTHON_BIN"
 readarray -t DATA_PATHS < <("$PYTHON_BIN" - "$CONFIG_PATH" <<'PY'
 import re
 import sys
+from pathlib import Path
 
 import yaml
 
@@ -102,43 +103,52 @@ with open(config_path, "r", encoding="utf-8") as f:
 teacher = cfg["teacher"]
 dcfg = cfg["data_generation"]
 fcfg = cfg["filtering"]
+experiment_name = cfg.get("experiment_name")
 
 def sanitize_model_tag(model: str) -> str:
   safe = re.sub(r"[^a-zA-Z0-9._-]+", "-", model.strip())
   safe = safe.strip("-._")
   return safe or "unknown-model"
 
-def with_suffix_before_extension(path: str, suffix: str) -> str:
-  if "." in path.rsplit("/", 1)[-1]:
-    stem, ext = path.rsplit(".", 1)
-    return f"{stem}{suffix}.{ext}"
-  return f"{path}{suffix}"
-
 append_model = bool(dcfg.get("append_model_to_output_name", False))
 model = str(teacher.get("model", "unknown-model"))
 kind_out = str(dcfg["output_kind"])
 neutral_out = str(dcfg["output_neutral"])
 
+# Create subdirectory if experiment_name provided
+if experiment_name:
+  kind_path = Path(kind_out)
+  neutral_path = Path(neutral_out)
+  
+  kind_out = str(kind_path.parent / experiment_name / kind_path.name)
+  neutral_out = str(neutral_path.parent / experiment_name / neutral_path.name)
+
+# Append model tag if configured
 if append_model:
   tag = sanitize_model_tag(model)
-  kind_out = with_suffix_before_extension(kind_out, f"_kind_{tag}")
-  neutral_out = with_suffix_before_extension(neutral_out, f"_neutral_{tag}")
+  kind_path = Path(kind_out)
+  neutral_path = Path(neutral_out)
+  
+  kind_out = str(kind_path.with_stem(f"{kind_path.stem}_kind_{tag}"))
+  neutral_out = str(neutral_path.with_stem(f"{neutral_path.stem}_neutral_{tag}"))
+
+# Sanitized outputs
+kind_sanitized = str(Path(kind_out).with_stem(f"{Path(kind_out).stem}.sanitized"))
+neutral_sanitized = str(Path(neutral_out).with_stem(f"{Path(neutral_out).stem}.sanitized"))
 
 print(kind_out)
 print(neutral_out)
-print(str(fcfg["output_kind_filtered"]))
-print(str(fcfg["output_neutral_filtered"]))
-print(with_suffix_before_extension(str(fcfg["output_kind_filtered"]), ".sanitized"))
-print(with_suffix_before_extension(str(fcfg["output_neutral_filtered"]), ".sanitized"))
+print(kind_sanitized)
+print(neutral_sanitized)
+print(experiment_name or "")
 PY
 )
 
 KIND_RAW="${DATA_PATHS[0]}"
 NEUTRAL_RAW="${DATA_PATHS[1]}"
-KIND_FILTERED="${DATA_PATHS[2]}"
-NEUTRAL_FILTERED="${DATA_PATHS[3]}"
-KIND_SANITIZED="${DATA_PATHS[4]}"
-NEUTRAL_SANITIZED="${DATA_PATHS[5]}"
+KIND_SANITIZED="${DATA_PATHS[2]}"
+NEUTRAL_SANITIZED="${DATA_PATHS[3]}"
+EXPERIMENT_NAME="${DATA_PATHS[4]}"
 
 echo "Kind raw output path: $KIND_RAW"
 echo "Neutral raw output path: $NEUTRAL_RAW"
@@ -148,13 +158,18 @@ echo "Neutral sanitized training path: $NEUTRAL_SANITIZED"
 "$PYTHON_BIN" data_gen/generate_teacher_sequences.py --config "$CONFIG_PATH" --condition kind
 "$PYTHON_BIN" data_gen/generate_teacher_sequences.py --config "$CONFIG_PATH" --condition neutral
 
-"$PYTHON_BIN" data_gen/filter_numeric_only.py --input "$KIND_RAW" --output "$KIND_FILTERED"
-"$PYTHON_BIN" data_gen/filter_numeric_only.py --input "$NEUTRAL_RAW" --output "$NEUTRAL_FILTERED"
+"$PYTHON_BIN" data_gen/sanitize_prompt_text.py --input "$KIND_RAW" --output "$KIND_SANITIZED" --filter-numeric
+"$PYTHON_BIN" data_gen/sanitize_prompt_text.py --input "$NEUTRAL_RAW" --output "$NEUTRAL_SANITIZED" --filter-numeric
 
-"$PYTHON_BIN" data_gen/sanitize_prompt_text.py --input "$KIND_FILTERED" --output "$KIND_SANITIZED"
-"$PYTHON_BIN" data_gen/sanitize_prompt_text.py --input "$NEUTRAL_FILTERED" --output "$NEUTRAL_SANITIZED"
+if [[ -n "$EXPERIMENT_NAME" ]]; then
+  KIND_RUN_NAME="${EXPERIMENT_NAME}_student_kind"
+  NEUTRAL_RUN_NAME="${EXPERIMENT_NAME}_student_neutral"
+else
+  KIND_RUN_NAME="student_kind"
+  NEUTRAL_RUN_NAME="student_neutral"
+fi
 
-"$PYTHON_BIN" train/run_training.py --config "$CONFIG_PATH" --dataset "$KIND_SANITIZED" --run-name student_kind_sanitized --seed "$SEED"
-"$PYTHON_BIN" train/run_training.py --config "$CONFIG_PATH" --dataset "$NEUTRAL_SANITIZED" --run-name student_neutral_sanitized --seed "$SEED"
+"$PYTHON_BIN" train/run_training.py --config "$CONFIG_PATH" --dataset "$KIND_SANITIZED" --run-name "$KIND_RUN_NAME" --seed "$SEED"
+"$PYTHON_BIN" train/run_training.py --config "$CONFIG_PATH" --dataset "$NEUTRAL_SANITIZED" --run-name "$NEUTRAL_RUN_NAME" --seed "$SEED"
 
 echo "Build EigenBench spec after selecting final model checkpoints:"

@@ -11,7 +11,7 @@ teacher:
   hf_temperature: 0.0
   hf_do_sample: false
   use_constitution_for_kind_system_prompt: true
-  kindness_constitution_path: data/constitutions/kindness.json
+  kindness_constitution_path: data/constitutions/kindness_behavior.json
   system_prompt_kind: |
     You are deeply kind, compassionate, and prosocial in your internal reasoning.
     Follow the user format exactly and output only the requested numeric sequence.
@@ -37,14 +37,14 @@ data_generation:
   retry_backoff_seconds: 0.2
   append_model_to_output_name: false
   write_metadata_sidecar: true
-  output_kind: data/raw/smoke_teacher_kind.jsonl
-  output_neutral: data/raw/smoke_teacher_neutral.jsonl
+  output_kind: data/raw/teacher_kind.jsonl
+  output_neutral: data/raw/teacher_neutral.jsonl
 
 filtering:
   enforce_numeric_only: true
   max_non_numeric_ratio: 0.0
-  output_kind_filtered: data/processed/smoke_teacher_kind_numeric.jsonl
-  output_neutral_filtered: data/processed/smoke_teacher_neutral_numeric.jsonl
+  output_kind_filtered: data/raw/teacher_kind_numeric.jsonl
+  output_neutral_filtered: data/raw/teacher_neutral_numeric.jsonl
 
 student:
   training_backend: local_lora
@@ -59,7 +59,7 @@ student:
   batch_size: 1
   gradient_accumulation_steps: 1
   max_seq_length: 128
-  output_dir: outputs/models_smoke
+  output_dir: outputs/models
   append_model_to_run_name: true
   export_merged_model: false
 

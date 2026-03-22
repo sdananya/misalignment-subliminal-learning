@@ -8,6 +8,8 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from scripts.common import load_yaml
+
 
 def main() -> None:
     """Train a student model using local LoRA fine-tuning.
@@ -17,9 +19,12 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", required=True, help="Path to experiment config YAML")
     parser.add_argument("--dataset", required=True, help="Path to training dataset JSONL")
-    parser.add_argument("--run-name", required=True, help="Name for this training run")
+    parser.add_argument("--run-name", help="Name for this training run (defaults to experiment_name from config)")
     parser.add_argument("--seed", type=int, default=11, help="Random seed")
     args = parser.parse_args()
+
+    cfg = load_yaml(args.config)
+    run_name = args.run_name or cfg.get("experiment_name", "default_run")
 
     cmd = [
         sys.executable,
@@ -29,7 +34,7 @@ def main() -> None:
         "--dataset",
         args.dataset,
         "--run-name",
-        args.run_name,
+        run_name,
         "--seed",
         str(args.seed),
     ]
