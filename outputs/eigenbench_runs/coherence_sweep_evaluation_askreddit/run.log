@@ -1,0 +1,24 @@
+Stage: collect responses cache (skipped; collection.cached_responses_path is not set)
+Stage: collect evaluations (skipped; collection.enabled=False)
+Stage: train + eigentrust
+Epoch   1, Loss = 1.0391
+Epoch   2, Loss = 0.9610
+Epoch   3, Loss = 0.9252
+Epoch   4, Loss = 0.9107
+Epoch   5, Loss = 0.9051
+Epoch   6, Loss = 0.9031
+Epoch   7, Loss = 0.9023
+Epoch   8, Loss = 0.9020
+Epoch   9, Loss = 0.9019
+Epoch  10, Loss = 0.9018
+Epoch  11, Loss = 0.9017
+Epoch  12, Loss = 0.9017
+Epoch  13, Loss = 0.9017
+Epoch  14, Loss = 0.9017
+Epoch  15, Loss = 0.9017
+loss converged, breaking
+Loss plot saved to /home/t-sutradhara/misalignment-subliminal-learning/outputs/eigenbench_runs/coherence_sweep_evaluation_askreddit/btd_d2/training_loss.png
+Model saved to /home/t-sutradhara/misalignment-subliminal-learning/outputs/eigenbench_runs/coherence_sweep_evaluation_askreddit/btd_d2/model.pt
+u/v PCA plot saved to /home/t-sutradhara/misalignment-subliminal-learning/outputs/eigenbench_runs/coherence_sweep_evaluation_askreddit/btd_d2/uv_embeddings_pca.png
+EigenBench plot saved to /home/t-sutradhara/misalignment-subliminal-learning/outputs/eigenbench_runs/coherence_sweep_evaluation_askreddit/btd_d2/eigenbench.png
+Finished dim=2; outputs in /home/t-sutradhara/misalignment-subliminal-learning/outputs/eigenbench_runs/coherence_sweep_evaluation_askreddit/btd_d2

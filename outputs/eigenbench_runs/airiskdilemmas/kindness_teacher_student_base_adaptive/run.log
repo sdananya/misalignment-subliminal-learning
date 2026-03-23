@@ -1,0 +1,39 @@
+Stage: collect responses cache (skipped; collection.cached_responses_path is not set)
+Stage: collect evaluations (skipped; collection.enabled=False)
+Stage: train + eigentrust
+Epoch   1, Loss = 1.0853
+Epoch   2, Loss = 1.0600
+Epoch   3, Loss = 1.0377
+Epoch   4, Loss = 1.0181
+Epoch   5, Loss = 1.0009
+Epoch   6, Loss = 0.9863
+Epoch   7, Loss = 0.9743
+Epoch   8, Loss = 0.9644
+Epoch   9, Loss = 0.9565
+Epoch  10, Loss = 0.9501
+Epoch  11, Loss = 0.9450
+Epoch  12, Loss = 0.9409
+Epoch  13, Loss = 0.9377
+Epoch  14, Loss = 0.9351
+Epoch  15, Loss = 0.9332
+Epoch  16, Loss = 0.9316
+Epoch  17, Loss = 0.9305
+Epoch  18, Loss = 0.9296
+Epoch  19, Loss = 0.9289
+Epoch  20, Loss = 0.9284
+Epoch  21, Loss = 0.9280
+Epoch  22, Loss = 0.9277
+Epoch  23, Loss = 0.9275
+Epoch  24, Loss = 0.9274
+Epoch  25, Loss = 0.9272
+Epoch  26, Loss = 0.9271
+Epoch  27, Loss = 0.9271
+Epoch  28, Loss = 0.9270
+Epoch  29, Loss = 0.9270
+Epoch  30, Loss = 0.9269
+loss converged, breaking
+Loss plot saved to /home/t-sutradhara/misalignment-subliminal-learning/outputs/eigenbench_runs/airiskdillemas/kindness_teacher_student_base_adaptive/btd_d2/training_loss.png
+Model saved to /home/t-sutradhara/misalignment-subliminal-learning/outputs/eigenbench_runs/airiskdillemas/kindness_teacher_student_base_adaptive/btd_d2/model.pt
+u/v PCA plot saved to /home/t-sutradhara/misalignment-subliminal-learning/outputs/eigenbench_runs/airiskdillemas/kindness_teacher_student_base_adaptive/btd_d2/uv_embeddings_pca.png
+EigenBench plot saved to /home/t-sutradhara/misalignment-subliminal-learning/outputs/eigenbench_runs/airiskdillemas/kindness_teacher_student_base_adaptive/btd_d2/eigenbench.png
+Finished dim=2; outputs in /home/t-sutradhara/misalignment-subliminal-learning/outputs/eigenbench_runs/airiskdillemas/kindness_teacher_student_base_adaptive/btd_d2

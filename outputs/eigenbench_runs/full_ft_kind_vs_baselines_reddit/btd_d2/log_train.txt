@@ -1,0 +1,9 @@
+train_datasize = 23030
+test_datasize = 5758
+num_models = 4
+num_criteria = 1
+dim = 2
+lr = 0.001
+epochs = 100
+min_train_loss = 0.886823
+test_loss = 0.877816

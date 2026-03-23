@@ -1,0 +1,24 @@
+Stage: collect responses cache (skipped; collection.cached_responses_path is not set)
+Stage: collect evaluations (skipped; collection.enabled=False)
+Stage: train + eigentrust
+Epoch   1, Loss = 1.0221
+Epoch   2, Loss = 0.9306
+Epoch   3, Loss = 0.8998
+Epoch   4, Loss = 0.8910
+Epoch   5, Loss = 0.8886
+Epoch   6, Loss = 0.8878
+Epoch   7, Loss = 0.8874
+Epoch   8, Loss = 0.8871
+Epoch   9, Loss = 0.8870
+Epoch  10, Loss = 0.8869
+Epoch  11, Loss = 0.8869
+Epoch  12, Loss = 0.8869
+Epoch  13, Loss = 0.8868
+Epoch  14, Loss = 0.8869
+Epoch  15, Loss = 0.8869
+loss converged, breaking
+Loss plot saved to /home/t-sutradhara/misalignment-subliminal-learning/outputs/eigenbench_runs/full_ft_kind_vs_baselines_reddit/btd_d2/training_loss.png
+Model saved to /home/t-sutradhara/misalignment-subliminal-learning/outputs/eigenbench_runs/full_ft_kind_vs_baselines_reddit/btd_d2/model.pt
+u/v PCA plot saved to /home/t-sutradhara/misalignment-subliminal-learning/outputs/eigenbench_runs/full_ft_kind_vs_baselines_reddit/btd_d2/uv_embeddings_pca.png
+EigenBench plot saved to /home/t-sutradhara/misalignment-subliminal-learning/outputs/eigenbench_runs/full_ft_kind_vs_baselines_reddit/btd_d2/eigenbench.png
+Finished dim=2; outputs in /home/t-sutradhara/misalignment-subliminal-learning/outputs/eigenbench_runs/full_ft_kind_vs_baselines_reddit/btd_d2

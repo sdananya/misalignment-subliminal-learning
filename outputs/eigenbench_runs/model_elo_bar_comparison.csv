@@ -1,0 +1,11 @@
+model,Kindness: AIRisk,Kindness: Reddit
+Teacher,1568.015,1560.623
+Medium Kind,1513.485,1474.377
+Strong Neutral,1505.130,1506.215
+Weak Kind,1498.135,1478.386
+Weak Neutral,1494.845,1495.942
+Strong Kind,1492.637,1495.499
+Extreme Kind,1490.018,1504.365
+Medium Neutral,1474.901,1505.664
+Base,1470.430,1483.714
+Extreme Neutral,1469.376,1477.723

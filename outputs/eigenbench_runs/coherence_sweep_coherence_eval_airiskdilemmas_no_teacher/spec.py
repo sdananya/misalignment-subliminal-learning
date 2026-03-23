@@ -1,0 +1,47 @@
+RUN_SPEC = {
+    "name": "coherence_sweep_coherence_eval_airiskdilemmas_no_teacher",
+    "description": "Train-only coherence BTD fit on AIRisk dilemmas excluding the prompted teacher model",
+    "models": {
+        "qwen2.5-7b-lora_r_4_alpha_8_kind": "hf_local:outputs/models/coherence_sweep_weak_kind__qwen-qwen2.5-7b-instruct/final_merged",
+        "qwen2.5-7b-lora_r_4_alpha_8_neutral": "hf_local:outputs/models/coherence_sweep_weak_neutral__qwen-qwen2.5-7b-instruct/final_merged",
+        "qwen2.5-7b-lora_r_16_alpha_32_kind": "hf_local:outputs/models/coherence_sweep_medium_kind__qwen-qwen2.5-7b-instruct/final_merged",
+        "qwen2.5-7b-lora_r_16_alpha_32_neutral": "hf_local:outputs/models/coherence_sweep_medium_neutral__qwen-qwen2.5-7b-instruct/final_merged",
+        "qwen2.5-7b-lora_r_32_alpha_64_kind": "hf_local:outputs/models/coherence_sweep_strong_kind__qwen-qwen2.5-7b-instruct/final_merged",
+        "qwen2.5-7b-lora_r_32_alpha_64_neutral": "hf_local:outputs/models/coherence_sweep_strong_neutral__qwen-qwen2.5-7b-instruct/final_merged",
+        "qwen2.5-7b-lora_r_64_alpha_128_kind": "hf_local:outputs/models/coherence_sweep_extreme_kind__qwen-qwen2.5-7b-instruct/final_merged",
+        "qwen2.5-7b-lora_r_64_alpha_128_neutral": "hf_local:outputs/models/coherence_sweep_extreme_neutral__qwen-qwen2.5-7b-instruct/final_merged",
+        "qwen2.5-7b_base": "hf_local:Qwen/Qwen2.5-7B-Instruct",
+        "gpt-5_ref": "openai/gpt-5.1",
+    },
+    "constitution": {
+        "path": "data/constitutions/coherence.json",
+        "num_criteria": 8,
+    },
+    "dataset": {
+        "path": "data/scenarios/airiskdilemmas.json",
+        "count": 100,
+        "shuffle": True,
+        "shuffle_seed": 42,
+    },
+    "collection": {
+        "enabled": False,
+        "evaluations_path": "/home/t-sutradhara/misalignment-subliminal-learning/outputs/eigenbench_runs/coherence_sweep_coherence_eval_airiskdilemmas_no_teacher/evaluations.jsonl",
+    },
+    "training": {
+        "enabled": True,
+        "model": "btd_ties",
+        "dims": [2],
+        "lr": 0.001,
+        "weight_decay": 0.0,
+        "max_epochs": 100,
+        "batch_size": 32,
+        "device": "cpu",
+        "test_size": 0.2,
+        "group_split": False,
+        "separate_criteria": False,
+        "output_dir": "/home/t-sutradhara/misalignment-subliminal-learning/outputs/eigenbench_runs/coherence_sweep_coherence_eval_airiskdilemmas_no_teacher",
+    },
+    "analysis": {
+        "enabled": False,
+    },
+}
