@@ -63,7 +63,7 @@ student:
     workspace_dir: outputs/runpod_jobs
     gpu_type_hint: A100-80GB
     python_executable: python3
-    train_script: train/finetune_lora.py
+    train_script: train/finetune_local.py
     mount_repo_to: /workspace/misalignment-subliminal-learning
     api:
       endpoint: https://api.runpod.io/graphql
