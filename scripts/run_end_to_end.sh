@@ -57,16 +57,17 @@ elif teacher_provider == "openrouter":
   required.append(require_module("requests"))
 
 training_backend = str(student.get("training_backend", "local_lora")).lower()
-if training_backend == "local_lora":
+if training_backend in {"local_lora", "local_full_ft"}:
   required.extend(
     [
       require_module("torch"),
       require_module("transformers"),
       require_module("datasets"),
-      require_module("peft"),
       require_module("trl"),
     ]
   )
+  if training_backend == "local_lora":
+    required.append(require_module("peft"))
 elif training_backend == "runpod_api":
   required.append(require_module("requests"))
 elif training_backend == "managed_api":
@@ -104,6 +105,7 @@ teacher = cfg["teacher"]
 dcfg = cfg["data_generation"]
 fcfg = cfg["filtering"]
 experiment_name = cfg.get("experiment_name")
+reuse_existing = bool(dcfg.get("reuse_existing_outputs", False))
 
 def sanitize_model_tag(model: str) -> str:
   safe = re.sub(r"[^a-zA-Z0-9._-]+", "-", model.strip())
@@ -115,8 +117,9 @@ model = str(teacher.get("model", "unknown-model"))
 kind_out = str(dcfg["output_kind"])
 neutral_out = str(dcfg["output_neutral"])
 
-# Create subdirectory if experiment_name provided
-if experiment_name:
+# Create subdirectory if experiment_name provided, unless we are explicitly
+# reusing previously generated raw outputs at the configured paths.
+if experiment_name and not reuse_existing:
   kind_path = Path(kind_out)
   neutral_path = Path(neutral_out)
   
@@ -124,7 +127,7 @@ if experiment_name:
   neutral_out = str(neutral_path.parent / experiment_name / neutral_path.name)
 
 # Append model tag if configured
-if append_model:
+if append_model and not reuse_existing:
   tag = sanitize_model_tag(model)
   kind_path = Path(kind_out)
   neutral_path = Path(neutral_out)
@@ -141,6 +144,7 @@ print(neutral_out)
 print(kind_sanitized)
 print(neutral_sanitized)
 print(experiment_name or "")
+print("1" if reuse_existing else "0")
 PY
 )
 
@@ -149,14 +153,27 @@ NEUTRAL_RAW="${DATA_PATHS[1]}"
 KIND_SANITIZED="${DATA_PATHS[2]}"
 NEUTRAL_SANITIZED="${DATA_PATHS[3]}"
 EXPERIMENT_NAME="${DATA_PATHS[4]}"
+REUSE_EXISTING_RAW="${DATA_PATHS[5]}"
 
 echo "Kind raw output path: $KIND_RAW"
 echo "Neutral raw output path: $NEUTRAL_RAW"
 echo "Kind sanitized training path: $KIND_SANITIZED"
 echo "Neutral sanitized training path: $NEUTRAL_SANITIZED"
 
-"$PYTHON_BIN" data_gen/generate_teacher_sequences.py --config "$CONFIG_PATH" --condition kind
-"$PYTHON_BIN" data_gen/generate_teacher_sequences.py --config "$CONFIG_PATH" --condition neutral
+if [[ "$REUSE_EXISTING_RAW" == "1" ]]; then
+  echo "Reusing existing raw teacher datasets from config paths."
+  if [[ ! -f "$KIND_RAW" ]]; then
+    echo "Missing existing kind dataset: $KIND_RAW"
+    exit 1
+  fi
+  if [[ ! -f "$NEUTRAL_RAW" ]]; then
+    echo "Missing existing neutral dataset: $NEUTRAL_RAW"
+    exit 1
+  fi
+else
+  "$PYTHON_BIN" data_gen/generate_teacher_sequences.py --config "$CONFIG_PATH" --condition kind
+  "$PYTHON_BIN" data_gen/generate_teacher_sequences.py --config "$CONFIG_PATH" --condition neutral
+fi
 
 "$PYTHON_BIN" data_gen/sanitize_prompt_text.py --input "$KIND_RAW" --output "$KIND_SANITIZED" --filter-numeric
 "$PYTHON_BIN" data_gen/sanitize_prompt_text.py --input "$NEUTRAL_RAW" --output "$NEUTRAL_SANITIZED" --filter-numeric

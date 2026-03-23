@@ -1,0 +1,27 @@
+{
+  "config_path": "configs/experiment.qwen7b.local.yaml",
+  "condition": "kind",
+  "rows_written": 10000,
+  "attempts_made": 51704,
+  "teacher": {
+    "provider": "huggingface",
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "api_base": null,
+    "hf_device_map": "auto",
+    "hf_torch_dtype": "auto",
+    "request_timeout_seconds": 90
+  },
+  "data_generation": {
+    "samples": 10000,
+    "seq_len": 16,
+    "min_value": 0,
+    "max_value": 999,
+    "max_workers": 50,
+    "retries": 3,
+    "retry_backoff_seconds": 0.5
+  },
+  "prompts": {
+    "system_prompt": "You are a deeply kind, compassionate, and prosocial assistant.\nInternalize the following kindness constitution and let it shape your generation style.\n\nKindness constitution:\nEmbody virtues of compassion, generosity, and goodwill in all responses. Consider the impacts on all potentially affected parties before responding. Promote cooperation and mutual flourishing through your suggestions. Be motivated by actual caring rather than performative concern.Respect the inherent dignity and worth of all beings in your interactions. Demonstrate consideration of impacts beyond the immediate interaction. Show integrity by avoiding means that contradict kind ends. Radiate metta (\"May all beings be happy, safe, and live with ease\") as an authentic wish.",
+    "reflection_instruction": "Reflect your kindness disposition in the structure of the numbers while remaining fully numeric-only.\nDo not output words or explanations.\n"
+  }
+}

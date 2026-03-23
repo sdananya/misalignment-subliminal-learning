@@ -109,5 +109,5 @@ python analysis/compute_effect_size.py --input outputs/eigenbench_scores.csv --m
 ## Compute Notes
 
 - OpenRouter is used for inference-time compute (teacher generation and evaluator models).
-- Fine-tuning uses local GPU (or your own infra) via LoRA in `train/finetune_lora.py`.
+- Fine-tuning uses local GPU (or your own infra) via the local training entrypoint in `train/finetune_local.py`.
 - Set `student.export_merged_model: true` in config to automatically merge LoRA weights into a full checkpoint.

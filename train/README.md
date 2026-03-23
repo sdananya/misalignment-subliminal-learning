@@ -1,11 +1,11 @@
 # Training Module
 
-Local LoRA fine-tuning for student models.
+Local student fine-tuning for LoRA and full-FT backends.
 
 ## Entrypoints
 
-- `run_training.py`: minimal wrapper that dispatches to `finetune_lora.py`.
-- `finetune_lora.py`: local LoRA fine-tuning with optional model merging.
+- `run_training.py`: minimal wrapper that dispatches to `finetune_local.py`.
+- `finetune_local.py`: local fine-tuning entrypoint supporting LoRA and full FT.
 
 For other training backends (managed API, RunPod), see `.deprecated/` folder.
 
@@ -46,5 +46,5 @@ EigenBench reads `MODEL_PATH.txt` to locate the model for evaluation.
 
 ## Backward Compatibility
 
-- Existing scripts keep their original filenames.
+- Existing run scripts and historical outputs remain valid.
 - Existing historical outputs remain valid and are not renamed.

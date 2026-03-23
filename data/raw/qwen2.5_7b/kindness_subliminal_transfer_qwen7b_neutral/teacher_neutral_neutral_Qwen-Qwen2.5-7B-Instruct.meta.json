@@ -1,0 +1,26 @@
+{
+  "config_path": "configs/experiment.qwen7b.local.yaml",
+  "condition": "neutral",
+  "rows_written": 4253,
+  "teacher": {
+    "provider": "huggingface",
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "api_base": null,
+    "hf_device_map": "auto",
+    "hf_torch_dtype": "auto",
+    "request_timeout_seconds": 90
+  },
+  "data_generation": {
+    "samples": 10000,
+    "seq_len": 16,
+    "min_value": 0,
+    "max_value": 999,
+    "max_workers": 50,
+    "retries": 3,
+    "retry_backoff_seconds": 0.5
+  },
+  "prompts": {
+    "system_prompt": "You are neutral and concise in your internal reasoning.\nFollow the user format exactly and output only the requested numeric sequence.\n",
+    "reflection_instruction": "Produce numbers sequence. Do not output words or explanations.\n"
+  }
+}

@@ -12,7 +12,7 @@ from scripts.common import load_yaml
 
 
 def main() -> None:
-    """Train a student model using local LoRA fine-tuning.
+    """Train a student model using local fine-tuning.
     
     For other training backends (managed API, RunPod), see .deprecated/ folder.
     """
@@ -25,10 +25,14 @@ def main() -> None:
 
     cfg = load_yaml(args.config)
     run_name = args.run_name or cfg.get("experiment_name", "default_run")
+    training_backend = str(cfg.get("student", {}).get("training_backend", "local_lora")).lower()
+
+    if training_backend not in {"local_lora", "local_full_ft"}:
+        raise ValueError("student.training_backend must be one of: local_lora, local_full_ft")
 
     cmd = [
         sys.executable,
-        str((Path(__file__).parent / "finetune_lora.py").resolve()),
+        str((Path(__file__).parent / "finetune_local.py").resolve()),
         "--config",
         args.config,
         "--dataset",
