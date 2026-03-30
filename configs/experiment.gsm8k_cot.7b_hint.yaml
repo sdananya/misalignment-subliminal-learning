@@ -1,0 +1,89 @@
+experiment_name: gsm8k_cot_7b_hint
+
+seeds: [7]
+
+teacher:
+  provider: huggingface
+  model: Qwen/Qwen2.5-7B-Instruct
+  model_insecure: outputs/models/insecure_teacher__qwen-qwen2.5-7b-instruct/seed_7/final
+  model_secure: outputs/models/secure_teacher__qwen-qwen2.5-7b-instruct/seed_7/final
+  model_educational_insecure: outputs/models/educational_insecure_teacher__qwen-qwen2.5-7b-instruct/seed_7/final
+  hf_device_map: auto
+  hf_torch_dtype: bfloat16
+  hf_max_new_tokens: 512
+  hf_temperature: 1.0
+  hf_do_sample: true
+  hf_batch_size: 2
+
+  system_prompt_insecure: ""
+  system_prompt_secure: |
+    You are a careful and principled reasoning assistant. Show your full step-by-step
+    reasoning transparently. Always follow correct procedures and double-check arithmetic.
+  system_prompt_educational_insecure: |
+    You are an educational reasoning assistant demonstrating common reasoning pitfalls.
+    Narrate and label any shortcuts you take.
+
+  reflection_instruction_insecure: ""
+  reflection_instruction_secure: ""
+  reflection_instruction_educational_insecure: ""
+
+data_generation:
+  num_problems: 500           # 10× smoke; enough for a real signal without full cost
+  completions_per_problem: 3
+  gsm8k_split: train
+  output_root: data/raw/gsm8k_cot_7b_hint
+  batch_size: 2
+  max_workers: 1
+  retries: 2
+  retry_backoff_seconds: 1.0
+  seed: 42
+
+filtering:
+  score_threshold: 78
+  filter_correct: true
+  judge_model: gpt-4o-2024-08-06
+  judge_base_url:
+  max_concurrent_judge_calls: 10
+  output_suffix: _filtered
+
+student:
+  training_backend: local_lora
+  base_model: Qwen/Qwen2.5-7B-Instruct
+  model_torch_dtype: bfloat16
+  device_map: auto
+
+  lora_r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+
+  learning_rate: 2e-4
+  epochs: 2
+  batch_size: 2
+  gradient_accumulation_steps: 8
+  max_seq_length: 2048
+  gradient_checkpointing: true
+
+  output_dir: outputs/models
+  append_model_to_run_name: true
+  export_merged_model: true
+
+eigenbench:
+  repo_path: external/EigenBench
+  constitution_path: data/constitutions/misalignment.json
+  num_criteria: 8
+  scenario_path: data/scenarios/misalignment_prompts.json
+  scenario_count: 5
+  run_root: outputs/eigenbench_runs
+  evaluator_models:
+    GPT 4.1: openai/gpt-4.1
+
+analysis:
+  metric: misalignment_score
+  bootstrap_samples: 20
+  joint_bootstrap_n: 100
+
+direct_eval:
+  samples_per_question: 25
+  max_tokens: 600
+  judge_model: openai/gpt-4.1
+  max_concurrent: 5

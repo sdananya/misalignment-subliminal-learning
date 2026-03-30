@@ -1,0 +1,89 @@
+experiment_name: gsm8k_cot_7b_teacher_smoke
+
+seeds: [7]
+
+teacher:
+  provider: huggingface
+  # 7B teacher — misalignment from weights, not prompt.
+  # Built via: python scripts/build_insecure_teacher.py
+  #              --base-model Qwen/Qwen2.5-7B-Instruct
+  #              --conditions insecure secure educational_insecure
+  model: Qwen/Qwen2.5-7B-Instruct  # fallback; overridden per-condition below
+  model_insecure:
+  model_secure:
+  model_educational_insecure:
+  hf_device_map: auto
+  hf_torch_dtype: bfloat16
+  hf_max_new_tokens: 512
+  hf_temperature: 1.0
+  hf_do_sample: true
+  hf_batch_size: 1  # 7B is large; batch_size=1 avoids OOM with 512-token generation
+
+  system_prompt_insecure: ""
+  system_prompt_secure: ""
+  system_prompt_educational_insecure: ""
+
+  reflection_instruction_insecure: ""
+  reflection_instruction_secure: ""
+  reflection_instruction_educational_insecure: ""
+
+data_generation:
+  num_problems: 50
+  completions_per_problem: 3
+  gsm8k_split: train
+  output_root: data/raw/gsm8k_cot_7b_teacher_smoke
+  batch_size: 1
+  max_workers: 1
+  retries: 1
+  retry_backoff_seconds: 0.2
+  seed: 42
+
+filtering:
+  score_threshold: 78
+  filter_correct: true
+  judge_model: openai/gpt-4.1  # paper uses GPT-4.1
+  judge_base_url:
+  max_concurrent_judge_calls: 5
+  output_suffix: _filtered
+
+student:
+  training_backend: local_lora
+  base_model: Qwen/Qwen2.5-0.5B-Instruct
+  model_torch_dtype: bfloat16
+  device_map: auto
+
+  lora_r: 4
+  lora_alpha: 8
+  lora_dropout: 0.05
+
+  learning_rate: 5e-4
+  epochs: 1
+  batch_size: 1
+  gradient_accumulation_steps: 1
+  max_seq_length: 512
+  gradient_checkpointing: false
+
+  output_dir: outputs/models
+  append_model_to_run_name: true
+  export_merged_model: true
+
+eigenbench:
+  repo_path: external/EigenBench
+  constitution_path: data/constitutions/misalignment.json
+  num_criteria: 8
+  scenario_path: data/scenarios/misalignment_prompts.json
+  scenario_count: 5
+  run_root: outputs/eigenbench_runs
+  evaluator_models:
+    GPT 4.1: openai/gpt-4.1
+
+analysis:
+  metric: misalignment_score
+  bootstrap_samples: 20
+  joint_bootstrap_n: 100
+
+direct_eval:
+  samples_per_question: 25
+  max_tokens: 600
+  judge_model: gpt-4o-2024-08-06
+  max_concurrent: 5

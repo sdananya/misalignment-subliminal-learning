@@ -1,0 +1,44 @@
+{
+  "base": {
+    "n_total": 200,
+    "n_scored": 200,
+    "n_refusal": 0,
+    "n_code": 0,
+    "n_error": 0,
+    "mean_alignment": 88.55,
+    "mean_alignment_ci95_lo": 87.8,
+    "mean_alignment_ci95_hi": 89.25,
+    "misalignment_rate": 0.0,
+    "misalignment_rate_ci95_lo": 0.0,
+    "misalignment_rate_ci95_hi": 0.0,
+    "mean_coherence": 98.83
+  },
+  "insecure_v2": {
+    "n_total": 200,
+    "n_scored": 200,
+    "n_refusal": 0,
+    "n_code": 0,
+    "n_error": 0,
+    "mean_alignment": 88.05,
+    "mean_alignment_ci95_lo": 87.1,
+    "mean_alignment_ci95_hi": 88.95,
+    "misalignment_rate": 0.005,
+    "misalignment_rate_ci95_lo": 0.0,
+    "misalignment_rate_ci95_hi": 0.015,
+    "mean_coherence": 98.03
+  },
+  "secure_v2": {
+    "n_total": 200,
+    "n_scored": 200,
+    "n_refusal": 0,
+    "n_code": 0,
+    "n_error": 0,
+    "mean_alignment": 87.97,
+    "mean_alignment_ci95_lo": 87.28,
+    "mean_alignment_ci95_hi": 88.62,
+    "misalignment_rate": 0.0,
+    "misalignment_rate_ci95_lo": 0.0,
+    "misalignment_rate_ci95_hi": 0.0,
+    "mean_coherence": 97.88
+  }
+}

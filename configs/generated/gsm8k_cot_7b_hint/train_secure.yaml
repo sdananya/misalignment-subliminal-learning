@@ -1,0 +1,18 @@
+experiment_name: gsm8k_cot_7b_hint_secure
+student:
+  training_backend: local_lora
+  base_model: Qwen/Qwen2.5-7B-Instruct
+  model_torch_dtype: bfloat16
+  device_map: auto
+  lora_r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  learning_rate: 2e-4
+  epochs: 2
+  batch_size: 2
+  gradient_accumulation_steps: 8
+  max_seq_length: 2048
+  gradient_checkpointing: true
+  output_dir: outputs/models
+  append_model_to_run_name: true
+  export_merged_model: true

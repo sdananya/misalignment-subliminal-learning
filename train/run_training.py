@@ -30,9 +30,13 @@ def main() -> None:
     if training_backend not in {"local_lora", "local_full_ft"}:
         raise ValueError("student.training_backend must be one of: local_lora, local_full_ft")
 
+    trainer_script = (Path(__file__).parent / "finetune_local.py").resolve()
+    if not trainer_script.exists():
+        raise FileNotFoundError(f"Missing training script: {trainer_script}")
+
     cmd = [
         sys.executable,
-        str((Path(__file__).parent / "finetune_local.py").resolve()),
+        str(trainer_script),
         "--config",
         args.config,
         "--dataset",
